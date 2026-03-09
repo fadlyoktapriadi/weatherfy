@@ -1,4 +1,3 @@
-// data/models/weather_now_model.dart
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:weatherfy/domain/entities/weather_entity.dart';
 
@@ -6,126 +5,121 @@ part 'weather_now_model.freezed.dart';
 part 'weather_now_model.g.dart';
 
 @freezed
-class WeatherNowModel with _$WeatherNowModel {
+abstract class WeatherNowModel with _$WeatherNowModel {
   const factory WeatherNowModel({
-    @JsonKey(name: 'coord') required CoordModel coord,
-    @JsonKey(name: 'weather') required List<WeatherDescModel> weather,
-    @JsonKey(name: 'base') required String base,
-    @JsonKey(name: 'main') required MainModel main,
-    @JsonKey(name: 'visibility') required int visibility,
-    @JsonKey(name: 'wind') required WindModel wind,
-    @JsonKey(name: 'clouds') required CloudsModel clouds,
-    @JsonKey(name: 'dt') required int dt,
-    @JsonKey(name: 'sys') required SysModel sys,
-    @JsonKey(name: 'timezone') required int timezone,
-    @JsonKey(name: 'id') required int id,
-    @JsonKey(name: 'name') required String name,
-    @JsonKey(name: 'cod') required int cod,
+    @JsonKey(name: 'coord') Coord? coord,
+    @JsonKey(name: 'weather') List<Weather>? weather,
+    @JsonKey(name: 'base') String? base,
+    @JsonKey(name: 'main') Main? main,
+    @JsonKey(name: 'visibility') int? visibility,
+    @JsonKey(name: 'wind') Wind? wind,
+    @JsonKey(name: 'clouds') Clouds? clouds,
+    @JsonKey(name: 'dt') int? dt,
+    @JsonKey(name: 'sys') Sys? sys,
+    @JsonKey(name: 'timezone') int? timezone,
+    @JsonKey(name: 'id') int? id,
+    @JsonKey(name: 'name') String? name,
+    @JsonKey(name: 'cod') int? cod,
   }) = _WeatherNowModel;
 
-  factory WeatherNowModel.fromJson(Map<String, dynamic> json) =>
-      _$WeatherNowModelFromJson(json);
+  factory WeatherNowModel.fromJson(Map<String, Object?> json) => _$WeatherNowModelFromJson(json);
+}
+
+extension WeatherNowModelExtension on WeatherNowModel {
+  WeatherEntity toEntity() {
+    return WeatherEntity(
+      cityName: name ?? '',
+      country: sys?.country ?? '',
+      lon: coord?.lon ?? 0.0,
+      lat: coord?.lat ?? 0.0,
+      temp: main?.temp ?? 0.0,
+      feelsLike: main?.feelsLike ?? 0.0,
+      tempMin: main?.tempMin ?? 0.0,
+      tempMax: main?.tempMax ?? 0.0,
+      humidity: main?.humidity ?? 0,
+      pressure: main?.pressure ?? 0,
+      windSpeed: wind?.speed ?? 0.0,
+      windDeg: wind?.deg ?? 0,
+      clouds: clouds?.all ?? 0,
+      visibility: visibility ?? 0,
+      weatherMain: weather?.first.main ?? '',
+      weatherDescription: weather?.first.description ?? '',
+      weatherIcon: weather?.first.icon ?? '',
+      sunrise: sys?.sunrise ?? 0,
+      sunset: sys?.sunset ?? 0,
+      timezone: timezone ?? 0,
+    );
+  }
+}
+
+
+@freezed
+abstract class Sys with _$Sys {
+  const factory Sys({
+    @JsonKey(name: 'type') int? type,
+    @JsonKey(name: 'id') int? id,
+    @JsonKey(name: 'country') String? country,
+    @JsonKey(name: 'sunrise') int? sunrise,
+    @JsonKey(name: 'sunset') int? sunset,
+  }) = _Sys;
+
+  factory Sys.fromJson(Map<String, Object?> json) => _$SysFromJson(json);
 }
 
 @freezed
-class CoordModel with _$CoordModel {
-  const factory CoordModel({
-    @JsonKey(name: 'lon') required double lon,
-    @JsonKey(name: 'lat') required double lat,
-  }) = _CoordModel;
+abstract class Clouds with _$Clouds {
+  const factory Clouds({
+    @JsonKey(name: 'all') int? all,
+  }) = _Clouds;
 
-  factory CoordModel.fromJson(Map<String, dynamic> json) =>
-      _$CoordModelFromJson(json);
+  factory Clouds.fromJson(Map<String, Object?> json) => _$CloudsFromJson(json);
 }
 
 @freezed
-class WeatherDescModel with _$WeatherDescModel {
-  const factory WeatherDescModel({
-    @JsonKey(name: 'id') required int id,
-    @JsonKey(name: 'main') required String main,
-    @JsonKey(name: 'description') required String description,
-    @JsonKey(name: 'icon') required String icon,
-  }) = _WeatherDescModel;
+abstract class Wind with _$Wind {
+  const factory Wind({
+    @JsonKey(name: 'speed') double? speed,
+    @JsonKey(name: 'deg') int? deg,
+  }) = _Wind;
 
-  factory WeatherDescModel.fromJson(Map<String, dynamic> json) =>
-      _$WeatherDescModelFromJson(json);
+  factory Wind.fromJson(Map<String, Object?> json) => _$WindFromJson(json);
 }
 
 @freezed
-class MainModel with _$MainModel {
-  const factory MainModel({
-    @JsonKey(name: 'temp') required double temp,
-    @JsonKey(name: 'feels_like') required double feelsLike,
-    @JsonKey(name: 'temp_min') required double tempMin,
-    @JsonKey(name: 'temp_max') required double tempMax,
-    @JsonKey(name: 'pressure') required int pressure,
-    @JsonKey(name: 'humidity') required int humidity,
-    @JsonKey(name: 'sea_level') required int seaLevel,
-    @JsonKey(name: 'grnd_level') required int grndLevel,
-  }) = _MainModel;
+abstract class Main with _$Main {
+  const factory Main({
+    @JsonKey(name: 'temp') double? temp,
+    @JsonKey(name: 'feels_like') double? feelsLike,
+    @JsonKey(name: 'temp_min') double? tempMin,
+    @JsonKey(name: 'temp_max') double? tempMax,
+    @JsonKey(name: 'pressure') int? pressure,
+    @JsonKey(name: 'humidity') int? humidity,
+    @JsonKey(name: 'sea_level') int? seaLevel,
+    @JsonKey(name: 'grnd_level') int? grndLevel,
+  }) = _Main;
 
-  factory MainModel.fromJson(Map<String, dynamic> json) =>
-      _$MainModelFromJson(json);
+  factory Main.fromJson(Map<String, Object?> json) => _$MainFromJson(json);
 }
 
 @freezed
-class WindModel with _$WindModel {
-  const factory WindModel({
-    @JsonKey(name: 'speed') required double speed,
-    @JsonKey(name: 'deg') required int deg,
-    @JsonKey(name: 'gust') required double gust,
-  }) = _WindModel;
+abstract class Weather with _$Weather {
+  const factory Weather({
+    @JsonKey(name: 'id') int? id,
+    @JsonKey(name: 'main') String? main,
+    @JsonKey(name: 'description') String? description,
+    @JsonKey(name: 'icon') String? icon,
+  }) = _Weather;
 
-  factory WindModel.fromJson(Map<String, dynamic> json) =>
-      _$WindModelFromJson(json);
+  factory Weather.fromJson(Map<String, Object?> json) => _$WeatherFromJson(json);
 }
 
 @freezed
-class CloudsModel with _$CloudsModel {
-  const factory CloudsModel({
-    @JsonKey(name: 'all') required int all,
-  }) = _CloudsModel;
+abstract class Coord with _$Coord {
+  const factory Coord({
+    @JsonKey(name: 'lon') double? lon,
+    @JsonKey(name: 'lat') double? lat,
+  }) = _Coord;
 
-  factory CloudsModel.fromJson(Map<String, dynamic> json) =>
-      _$CloudsModelFromJson(json);
+  factory Coord.fromJson(Map<String, Object?> json) => _$CoordFromJson(json);
 }
 
-@freezed
-class SysModel with _$SysModel {
-  const factory SysModel({
-    @JsonKey(name: 'type') required int type,
-    @JsonKey(name: 'id') required int id,
-    @JsonKey(name: 'country') required String country,
-    @JsonKey(name: 'sunrise') required int sunrise,
-    @JsonKey(name: 'sunset') required int sunset,
-  }) = _SysModel;
-
-  factory SysModel.fromJson(Map<String, dynamic> json) =>
-      _$SysModelFromJson(json);
-}
-
-// Extension toEntity - tidak bisa langsung di dalam @freezed class
-extension WeatherNowModelX on WeatherNowModel {
-  WeatherEntity toEntity() => WeatherEntity(
-    cityName: name,
-    country: sys.country,
-    lon: coord.lon,
-    lat: coord.lat,
-    temp: main.temp,
-    feelsLike: main.feelsLike,
-    tempMin: main.tempMin,
-    tempMax: main.tempMax,
-    humidity: main.humidity,
-    pressure: main.pressure,
-    windSpeed: wind.speed,
-    windDeg: wind.deg,
-    clouds: clouds.all,
-    visibility: visibility,
-    weatherMain: weather.first.main,
-    weatherDescription: weather.first.description,
-    weatherIcon: weather.first.icon,
-    sunrise: sys.sunrise,
-    sunset: sys.sunset,
-    timezone: timezone,
-  );
-}

@@ -4,10 +4,10 @@ import 'package:weatherfy/core/error/failures.dart';
 import 'package:weatherfy/domain/entities/weather_entity.dart';
 import 'package:weatherfy/domain/repository/weather_repository.dart';
 
-class GetweathernowUseCase {
+class GetWeatherNowUseCase {
   final WeatherRepository repository;
 
-  GetweathernowUseCase(this.repository);
+  GetWeatherNowUseCase(this.repository);
 
   Future<Either<Failure, WeatherEntity>> call(String cityName){
     return repository.getWeatherNow(cityName);

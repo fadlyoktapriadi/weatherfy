@@ -1,5 +1,5 @@
 
-import 'package:dio/dio.dart';
+import 'package:weatherfy/core/network/dio_client.dart';
 import 'package:weatherfy/data/models/weather_now_model.dart';
 
 abstract class WeatherRemoteDataSource {
@@ -7,16 +7,14 @@ abstract class WeatherRemoteDataSource {
 }
 
 class WeatherRemoteDataSourceImpl implements WeatherRemoteDataSource {
-  final Dio dio;
-  WeatherRemoteDataSourceImpl({required this.dio});
+  final DioClient dioClient;
+  WeatherRemoteDataSourceImpl({required this.dioClient});
 
   @override
   Future<WeatherNowModel> getWeatherNow(String cityName) async {
-    final response = await dio.get(
+    final response = await dioClient.dio.get(
       '/weather',
-      queryParameters: {
-        'q': cityName
-      }
+      queryParameters: {'q': cityName},
     );
     return WeatherNowModel.fromJson(response.data);
   }

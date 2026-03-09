@@ -1,7 +1,8 @@
-import 'package:bloc/bloc.dart';
+
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:weatherfy/domain/entities/weather_entity.dart';
-import 'package:weatherfy/domain/usecases/GetWeatherNowUseCase.dart';
+import 'package:weatherfy/domain/usecases/get_weather_now.dart';
 
 part 'weather_now_event.dart';
 
@@ -10,7 +11,7 @@ part 'weather_now_state.dart';
 part 'weather_now_bloc.freezed.dart';
 
 class WeatherNowBloc extends Bloc<WeatherNowEvent, WeatherNowState> {
-  final GetweathernowUseCase _getWeatherNowUseCase;
+  final GetWeatherNowUseCase _getWeatherNowUseCase;
 
   WeatherNowBloc(this._getWeatherNowUseCase)
     : super(const WeatherNowState.initial()) {

@@ -5,8 +5,9 @@ class ItemForecastRow extends StatelessWidget {
   final String day;
   final String maxTemp;
   final String minTemp;
+  final String image;
 
-  const ItemForecastRow({required this.day, required this.maxTemp, required this.minTemp, super.key });
+  const ItemForecastRow({required this.day, required this.maxTemp, required this.minTemp, required this.image, super.key });
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +27,7 @@ class ItemForecastRow extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: Image.asset(
-                "assets/images/day clouds.png",
+                image,
                 width: 35,
                 height: 35,
               ),

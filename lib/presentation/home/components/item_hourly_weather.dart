@@ -3,9 +3,10 @@ import 'package:weatherfy/theme/app_text_styles.dart';
 
 class ItemHourlyWeather extends StatelessWidget {
   final String temp;
+  final String image;
   final String time;
 
-  const ItemHourlyWeather({super.key, required this.temp, required this.time});
+  const ItemHourlyWeather({super.key, required this.temp, required this.image, required this.time});
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +22,7 @@ class ItemHourlyWeather extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 18.0),
             child: Image.asset(
-              "assets/images/day clouds.png",
+              image,
               width: 40,
               height: 40,
             ),

@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:intl/intl.dart';
 import 'package:weatherfy/core/di/injection.dart' as di;
+import 'package:weatherfy/domain/entities/weather_forecast_entity.dart';
+import 'package:weatherfy/presentation/bloc/weather_forecast/weather_forecast_bloc.dart';
 import 'package:weatherfy/presentation/bloc/weather_now/weather_now_bloc.dart';
 import 'package:weatherfy/presentation/home/components/item_hourly_weather.dart';
 import 'package:weatherfy/theme/app_colors.dart';
 import 'package:weatherfy/theme/app_text_styles.dart';
 
 import 'components/item_forecast_row.dart';
+import 'components/search_bottom_sheet.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -26,10 +30,19 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) =>
-          di.locator<WeatherNowBloc>()
-            ..add(const WeatherNowEvent.getWeatherNow("Malang")),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) =>
+              di.locator<WeatherNowBloc>()
+                ..add(const WeatherNowEvent.getWeatherNow("Malang")),
+        ),
+        BlocProvider(
+          create: (context) =>
+              di.locator<WeatherForecastBloc>()
+                ..add(const WeatherForecastEvent.getWeatherForecast("Malang")),
+        ),
+      ],
       child: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -70,30 +83,45 @@ class _HomeScreenState extends State<HomeScreen> {
                                 padding: const EdgeInsets.symmetric(
                                   vertical: 4,
                                 ),
-                                child: Row(
-                                  children: [
-                                    SvgPicture.asset(
-                                      "assets/images/ic_point_location.svg",
-                                      width: 20,
-                                      height: 25,
-                                    ),
-                                    const SizedBox(width: 12),
-                                    Text(
-                                      "Malang",
-                                      style: AppTextStyles.heading3.copyWith(
-                                        color: Colors.white,
+                                child: InkWell(
+                                  onTap: () {
+                                    showModalBottomSheet(
+                                      context: context,
+                                      builder: (context) {
+                                        return FractionallySizedBox(
+                                          heightFactor: 0.8,
+                                          child: const SearchBottomSheet(),
+                                        );
+                                      },
+                                    );
+                                  },
+                                  child: Row(
+                                    children: [
+                                      SvgPicture.asset(
+                                        "assets/images/ic_point_location.svg",
+                                        width: 20,
+                                        height: 25,
                                       ),
-                                    ),
-                                    const SizedBox(width: 12),
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 2.0),
-                                      child: SvgPicture.asset(
-                                        "assets/images/ic_arrow_down.svg",
-                                        width: 11,
-                                        height: 8,
+                                      const SizedBox(width: 12),
+                                      Text(
+                                        "Malang",
+                                        style: AppTextStyles.heading3.copyWith(
+                                          color: Colors.white,
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                      const SizedBox(width: 12),
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                          top: 2.0,
+                                        ),
+                                        child: SvgPicture.asset(
+                                          "assets/images/ic_arrow_down.svg",
+                                          width: 11,
+                                          height: 8,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                               SvgPicture.asset(
@@ -247,58 +275,93 @@ class _HomeScreenState extends State<HomeScreen> {
                                 vertical: 12.0,
                                 horizontal: 18.0,
                               ),
-                              child: Column(
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        "Today",
-                                        style: AppTextStyles.heading2.copyWith(
-                                          color: Colors.white,
+                              child:
+                                  BlocBuilder<
+                                    WeatherForecastBloc,
+                                    WeatherForecastState
+                                  >(
+                                    builder: (context, state) {
+                                      return state.when(
+                                        initial: () => const Center(
+                                          child: CircularProgressIndicator(),
                                         ),
-                                      ),
-                                      Text(
-                                        "Mar, 10",
-                                        style: AppTextStyles.bodyLarge.copyWith(
-                                          color: Colors.white,
+                                        loading: () => const Center(
+                                          child: CircularProgressIndicator(),
                                         ),
-                                      ),
-                                    ],
+                                        error: (message) => Center(
+                                          child: Text(
+                                            message,
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                        loaded: (listForecast) => Column(
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Text(
+                                                  "Today",
+                                                  style: AppTextStyles.heading2
+                                                      .copyWith(
+                                                        color: Colors.white,
+                                                      ),
+                                                ),
+                                                Text(
+                                                  DateFormat("MMM, d").format(
+                                                    DateTime.parse(
+                                                      listForecast.first.dtTxt,
+                                                    ),
+                                                  ),
+                                                  style: AppTextStyles.bodyLarge
+                                                      .copyWith(
+                                                        color: Colors.white,
+                                                      ),
+                                                ),
+                                              ],
+                                            ),
+                                            const SizedBox(height: 16),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                ...listForecast
+                                                    .take(5)
+                                                    .map(
+                                                      (
+                                                        forecast,
+                                                      ) => ItemHourlyWeather(
+                                                        temp:
+                                                            "${forecast.temp.toInt()}ºC",
+                                                        image:
+                                                            _getWeatherImagePath(
+                                                              forecast
+                                                                  .weatherMain,
+                                                            ),
+                                                        time:
+                                                            DateFormat(
+                                                              "HH:mm",
+                                                            ).format(
+                                                              DateTime.parse(
+                                                                forecast.dtTxt,
+                                                              ),
+                                                            ),
+                                                      ),
+                                                    ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    },
                                   ),
-                                  const SizedBox(height: 16),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      ItemHourlyWeather(
-                                        temp: "30ºC",
-                                        time: "00.00",
-                                      ),
-                                      ItemHourlyWeather(
-                                        temp: "29ºC",
-                                        time: "01.00",
-                                      ),
-                                      ItemHourlyWeather(
-                                        temp: "28ºC",
-                                        time: "02.00",
-                                      ),
-                                      ItemHourlyWeather(
-                                        temp: "27ºC",
-                                        time: "03.00",
-                                      ),
-                                      ItemHourlyWeather(
-                                        temp: "26ºC",
-                                        time: "04.00",
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 24),
-                                ],
-                              ),
                             ),
                           ),
+
                           const SizedBox(height: 18),
                           Container(
                             decoration: BoxDecoration(
@@ -310,35 +373,71 @@ class _HomeScreenState extends State<HomeScreen> {
                                 vertical: 12.0,
                                 horizontal: 18.0,
                               ),
-                              child: Column(
-                                children: [
-                                  Row(
-                                    children: [
-                                      Text(
-                                        "Next Forecast",
-                                        style: AppTextStyles.heading2.copyWith(
-                                          color: Colors.white,
+                              child:
+                                  BlocBuilder<
+                                    WeatherForecastBloc,
+                                    WeatherForecastState
+                                  >(
+                                    builder: (context, state) {
+                                      return state.when(
+                                        initial: () => const Center(
+                                          child: CircularProgressIndicator(),
                                         ),
-                                      ),
-                                    ],
+                                        loading: () => const Center(
+                                          child: CircularProgressIndicator(),
+                                        ),
+                                        error: (message) => Center(
+                                          child: Text(
+                                            message,
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                        loaded: (listForecast) {
+                                          final dailySummaries = listForecast
+                                              .toDailySummary()
+                                              .skip(1)
+                                              .take(5)
+                                              .toList();
+
+                                          return Column(
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  Text(
+                                                    "Next Forecast",
+                                                    style: AppTextStyles
+                                                        .heading2
+                                                        .copyWith(
+                                                          color: Colors.white,
+                                                        ),
+                                                  ),
+                                                ],
+                                              ),
+                                              ...dailySummaries.map(
+                                                (daily) => ItemForecastRow(
+                                                  day: DateFormat("EEEE")
+                                                      .format(
+                                                        DateTime.parse(
+                                                          daily.date,
+                                                        ),
+                                                      ),
+                                                  maxTemp:
+                                                      "${daily.maxTemp.toInt()}ºC",
+                                                  minTemp:
+                                                      "${daily.minTemp.toInt()}ºC",
+                                                  image: _getWeatherImagePath(
+                                                    daily.weatherMain,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      );
+                                    },
                                   ),
-                                  ItemForecastRow(
-                                    day: "Wednesday",
-                                    maxTemp: "13ºC",
-                                    minTemp: "10ºC",
-                                  ),
-                                  ItemForecastRow(
-                                    day: "Thursday",
-                                    maxTemp: "14ºC",
-                                    minTemp: "11ºC",
-                                  ),
-                                  ItemForecastRow(
-                                    day: "Friday",
-                                    maxTemp: "12ºC",
-                                    minTemp: "9ºC",
-                                  ),
-                                ],
-                              ),
                             ),
                           ),
                           const SizedBox(height: 24),

@@ -3,7 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:weatherfy/core/di/injection.dart' as di;
+import 'package:weatherfy/domain/entities/city_entity.dart';
 import 'package:weatherfy/domain/entities/weather_forecast_entity.dart';
+import 'package:weatherfy/presentation/bloc/city_search/city_search_bloc.dart';
 import 'package:weatherfy/presentation/bloc/weather_forecast/weather_forecast_bloc.dart';
 import 'package:weatherfy/presentation/bloc/weather_now/weather_now_bloc.dart';
 import 'package:weatherfy/presentation/home/components/item_hourly_weather.dart';
@@ -21,6 +23,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  String _selectedCityName = 'Malang';
+
   String _getWeatherImagePath(String weatherMain) {
     final hour = DateTime.now().hour;
     final timePrefix = (hour >= 6 && hour < 18) ? "day" : "night";
@@ -84,16 +88,28 @@ class _HomeScreenState extends State<HomeScreen> {
                                   vertical: 4,
                                 ),
                                 child: InkWell(
-                                  onTap: () {
-                                    showModalBottomSheet(
+                                  onTap: () async {
+                                    final selectedCity = await showModalBottomSheet<CityEntity>(
                                       context: context,
-                                      builder: (context) {
-                                        return FractionallySizedBox(
-                                          heightFactor: 0.8,
-                                          child: const SearchBottomSheet(),
-                                        );
-                                      },
+                                      isScrollControlled: true,
+                                      backgroundColor: Colors.transparent,
+                                      builder: (_) => BlocProvider(
+                                        create: (_) => di.locator<CitySearchBloc>(),
+                                        child: const SearchBottomSheet(),
+                                      ),
                                     );
+
+                                    if (selectedCity != null && context.mounted) {
+                                      setState(() {
+                                        _selectedCityName = selectedCity.name;
+                                      });
+                                      context.read<WeatherNowBloc>().add(
+                                        WeatherNowEvent.getWeatherNow(selectedCity.name),
+                                      );
+                                      context.read<WeatherForecastBloc>().add(
+                                        WeatherForecastEvent.getWeatherForecast(selectedCity.name),
+                                      );
+                                    }
                                   },
                                   child: Row(
                                     children: [
@@ -104,7 +120,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       ),
                                       const SizedBox(width: 12),
                                       Text(
-                                        "Malang",
+                                        _selectedCityName,
                                         style: AppTextStyles.heading3.copyWith(
                                           color: Colors.white,
                                         ),

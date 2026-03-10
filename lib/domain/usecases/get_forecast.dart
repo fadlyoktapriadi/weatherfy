@@ -9,8 +9,7 @@ class GetForecastUseCase {
 
   GetForecastUseCase(this.repository);
 
-  Future<Either<Failure, List<ForecastEntity>>> call(String cityName) {
-    return repository.getWeatherForecast(cityName);
+  Future<Either<Failure, List<ForecastEntity>>> call(String cityName, double? lat, double? lon) {
+    return repository.getWeatherForecast(cityName, lat, lon);
   }
-
 }

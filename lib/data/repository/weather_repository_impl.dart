@@ -1,3 +1,4 @@
+
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:weatherfy/core/error/failures.dart';
@@ -13,9 +14,9 @@ class WeatherRepositoryImpl implements WeatherRepository {
   WeatherRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<Either<Failure, WeatherEntity>> getWeatherNow(String cityName) async {
+  Future<Either<Failure, WeatherEntity>> getWeatherNow(String cityName, double? lat, double? lon) async {
     try {
-      final result = await remoteDataSource.getWeatherNow(cityName);
+      final result = await remoteDataSource.getWeatherNow(cityName, lat, lon);
       return Right(result.toEntity());
     } on DioException catch (e) {
       return Left(ServerFailure(message: e.toString()));
@@ -25,9 +26,9 @@ class WeatherRepositoryImpl implements WeatherRepository {
   }
 
   @override
-  Future<Either<Failure, List<ForecastEntity>>> getWeatherForecast(String cityName) async {
+  Future<Either<Failure, List<ForecastEntity>>> getWeatherForecast(String cityName, double? lat, double? lon) async {
     try {
-      final result = await remoteDataSource.getWeatherForecast(cityName);
+      final result = await remoteDataSource.getWeatherForecast(cityName, lat, lon);
       return Right(result);
     } on DioException catch (e) {
       return Left(ServerFailure(message: e.toString()));

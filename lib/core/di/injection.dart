@@ -6,6 +6,8 @@ import 'package:weatherfy/data/repository/city_repository_impl.dart';
 import 'package:weatherfy/data/repository/weather_repository_impl.dart';
 import 'package:weatherfy/domain/repository/city_repository.dart';
 import 'package:weatherfy/domain/repository/weather_repository.dart';
+import 'package:weatherfy/domain/usecases/get_city_from_location.dart';
+import 'package:weatherfy/domain/usecases/get_current_location.dart';
 import 'package:weatherfy/domain/usecases/get_forecast.dart';
 import 'package:weatherfy/domain/usecases/get_weather_now.dart';
 import 'package:weatherfy/domain/usecases/search_city.dart';
@@ -23,7 +25,8 @@ void init() {
   locator.registerLazySingleton(() => GetWeatherNowUseCase(locator()));
   locator.registerLazySingleton(() => GetForecastUseCase(locator()));
   locator.registerLazySingleton(() => SearchCitiesUseCase(locator()));
-
+  locator.registerLazySingleton(() => GetCurrentLocationUseCase());
+  locator.registerLazySingleton(() => GetCityFromLocationUseCase());
 
   locator.registerLazySingleton<WeatherRepository>(
         () => WeatherRepositoryImpl(remoteDataSource: locator()),

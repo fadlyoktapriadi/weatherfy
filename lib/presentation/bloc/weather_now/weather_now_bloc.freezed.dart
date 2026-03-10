@@ -18,17 +18,20 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$WeatherNowEvent {
   String get cityName => throw _privateConstructorUsedError;
+  double? get lat => throw _privateConstructorUsedError;
+  double? get lon => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(String cityName) getWeatherNow,
+    required TResult Function(String cityName, double? lat, double? lon)
+    getWeatherNow,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(String cityName)? getWeatherNow,
+    TResult? Function(String cityName, double? lat, double? lon)? getWeatherNow,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String cityName)? getWeatherNow,
+    TResult Function(String cityName, double? lat, double? lon)? getWeatherNow,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -59,7 +62,7 @@ abstract class $WeatherNowEventCopyWith<$Res> {
     $Res Function(WeatherNowEvent) then,
   ) = _$WeatherNowEventCopyWithImpl<$Res, WeatherNowEvent>;
   @useResult
-  $Res call({String cityName});
+  $Res call({String cityName, double? lat, double? lon});
 }
 
 /// @nodoc
@@ -76,13 +79,25 @@ class _$WeatherNowEventCopyWithImpl<$Res, $Val extends WeatherNowEvent>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? cityName = null}) {
+  $Res call({
+    Object? cityName = null,
+    Object? lat = freezed,
+    Object? lon = freezed,
+  }) {
     return _then(
       _value.copyWith(
             cityName: null == cityName
                 ? _value.cityName
                 : cityName // ignore: cast_nullable_to_non_nullable
                       as String,
+            lat: freezed == lat
+                ? _value.lat
+                : lat // ignore: cast_nullable_to_non_nullable
+                      as double?,
+            lon: freezed == lon
+                ? _value.lon
+                : lon // ignore: cast_nullable_to_non_nullable
+                      as double?,
           )
           as $Val,
     );
@@ -98,7 +113,7 @@ abstract class _$$GetWeatherNowImplCopyWith<$Res>
   ) = __$$GetWeatherNowImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String cityName});
+  $Res call({String cityName, double? lat, double? lon});
 }
 
 /// @nodoc
@@ -114,13 +129,25 @@ class __$$GetWeatherNowImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? cityName = null}) {
+  $Res call({
+    Object? cityName = null,
+    Object? lat = freezed,
+    Object? lon = freezed,
+  }) {
     return _then(
       _$GetWeatherNowImpl(
         null == cityName
             ? _value.cityName
             : cityName // ignore: cast_nullable_to_non_nullable
                   as String,
+        lat: freezed == lat
+            ? _value.lat
+            : lat // ignore: cast_nullable_to_non_nullable
+                  as double?,
+        lon: freezed == lon
+            ? _value.lon
+            : lon // ignore: cast_nullable_to_non_nullable
+                  as double?,
       ),
     );
   }
@@ -129,14 +156,18 @@ class __$$GetWeatherNowImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$GetWeatherNowImpl implements _GetWeatherNow {
-  const _$GetWeatherNowImpl(this.cityName);
+  const _$GetWeatherNowImpl(this.cityName, {this.lat, this.lon});
 
   @override
   final String cityName;
+  @override
+  final double? lat;
+  @override
+  final double? lon;
 
   @override
   String toString() {
-    return 'WeatherNowEvent.getWeatherNow(cityName: $cityName)';
+    return 'WeatherNowEvent.getWeatherNow(cityName: $cityName, lat: $lat, lon: $lon)';
   }
 
   @override
@@ -145,11 +176,13 @@ class _$GetWeatherNowImpl implements _GetWeatherNow {
         (other.runtimeType == runtimeType &&
             other is _$GetWeatherNowImpl &&
             (identical(other.cityName, cityName) ||
-                other.cityName == cityName));
+                other.cityName == cityName) &&
+            (identical(other.lat, lat) || other.lat == lat) &&
+            (identical(other.lon, lon) || other.lon == lon));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, cityName);
+  int get hashCode => Object.hash(runtimeType, cityName, lat, lon);
 
   /// Create a copy of WeatherNowEvent
   /// with the given fields replaced by the non-null parameter values.
@@ -162,27 +195,28 @@ class _$GetWeatherNowImpl implements _GetWeatherNow {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(String cityName) getWeatherNow,
+    required TResult Function(String cityName, double? lat, double? lon)
+    getWeatherNow,
   }) {
-    return getWeatherNow(cityName);
+    return getWeatherNow(cityName, lat, lon);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(String cityName)? getWeatherNow,
+    TResult? Function(String cityName, double? lat, double? lon)? getWeatherNow,
   }) {
-    return getWeatherNow?.call(cityName);
+    return getWeatherNow?.call(cityName, lat, lon);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String cityName)? getWeatherNow,
+    TResult Function(String cityName, double? lat, double? lon)? getWeatherNow,
     required TResult orElse(),
   }) {
     if (getWeatherNow != null) {
-      return getWeatherNow(cityName);
+      return getWeatherNow(cityName, lat, lon);
     }
     return orElse();
   }
@@ -217,10 +251,18 @@ class _$GetWeatherNowImpl implements _GetWeatherNow {
 }
 
 abstract class _GetWeatherNow implements WeatherNowEvent {
-  const factory _GetWeatherNow(final String cityName) = _$GetWeatherNowImpl;
+  const factory _GetWeatherNow(
+    final String cityName, {
+    final double? lat,
+    final double? lon,
+  }) = _$GetWeatherNowImpl;
 
   @override
   String get cityName;
+  @override
+  double? get lat;
+  @override
+  double? get lon;
 
   /// Create a copy of WeatherNowEvent
   /// with the given fields replaced by the non-null parameter values.

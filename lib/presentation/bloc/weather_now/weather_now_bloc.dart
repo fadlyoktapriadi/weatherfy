@@ -16,17 +16,19 @@ class WeatherNowBloc extends Bloc<WeatherNowEvent, WeatherNowState> {
   WeatherNowBloc(this._getWeatherNowUseCase)
     : super(const WeatherNowState.initial()) {
     on<WeatherNowEvent>((event, emit) async {
-      await event.map(getWeatherNow: (e) => _onGetWeatherNow(e.cityName, emit));
+      await event.map(getWeatherNow: (e) => _onGetWeatherNow(e.cityName, e.lat, e.lon, emit));
     });
   }
 
   Future<void> _onGetWeatherNow(
     String cityName,
+    double? lat,
+    double? lon,
     Emitter<WeatherNowState> emit,
   ) async {
     emit(const WeatherNowState.loading());
 
-    final result = await _getWeatherNowUseCase(cityName);
+    final result = await _getWeatherNowUseCase(cityName, lat, lon);
 
     result.fold(
       (failure) => emit(WeatherNowState.error(failure.message)),

@@ -5,6 +5,8 @@ import 'package:intl/intl.dart';
 import 'package:weatherfy/core/di/injection.dart' as di;
 import 'package:weatherfy/domain/entities/city_entity.dart';
 import 'package:weatherfy/domain/entities/weather_forecast_entity.dart';
+import 'package:weatherfy/domain/usecases/get_city_from_location.dart';
+import 'package:weatherfy/domain/usecases/get_current_location.dart';
 import 'package:weatherfy/presentation/bloc/city_search/city_search_bloc.dart';
 import 'package:weatherfy/presentation/bloc/weather_forecast/weather_forecast_bloc.dart';
 import 'package:weatherfy/presentation/bloc/weather_now/weather_now_bloc.dart';
@@ -25,6 +27,61 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   String _selectedCityName = 'Malang';
 
+  late final WeatherNowBloc _weatherNowBloc;
+  late final WeatherForecastBloc _weatherForecastBloc;
+
+  @override
+  void initState() {
+    super.initState();
+    _weatherNowBloc = di.locator<WeatherNowBloc>();
+    _weatherForecastBloc = di.locator<WeatherForecastBloc>();
+    _loadLocationAndWeather();
+  }
+
+  @override
+  void dispose() {
+    _weatherNowBloc.close();
+    _weatherForecastBloc.close();
+    super.dispose();
+  }
+
+  Future<void> _loadLocationAndWeather() async {
+    final locationResult = await di.locator<GetCurrentLocationUseCase>()();
+
+    await locationResult.fold(
+          (error) async {
+        debugPrint('Location error: $error');
+        _fetchWeatherForCity('Malang');
+      },
+          (position) async {
+        final cityResult = await di.locator<GetCityFromLocationUseCase>()(
+          position.latitude,
+          position.longitude,
+        );
+
+        cityResult.fold(
+              (error) {
+            debugPrint('Geocoding error: $error');
+            _fetchWeatherForCity('Malang');
+          },
+              (cityName) {
+            if (mounted) {
+              setState(() {
+                _selectedCityName = cityName;
+              });
+              _fetchWeatherForCity(cityName, lat: position.latitude, lon: position.longitude);
+            }
+          },
+        );
+      },
+    );
+  }
+
+  void _fetchWeatherForCity(String cityName, {double? lat, double? lon}) {
+    _weatherNowBloc.add(WeatherNowEvent.getWeatherNow(cityName, lat: lat, lon: lon));
+    _weatherForecastBloc.add(WeatherForecastEvent.getWeatherForecast(cityName, lat: lat, lon: lon));
+  }
+
   String _getWeatherImagePath(String weatherMain) {
     final hour = DateTime.now().hour;
     final timePrefix = (hour >= 6 && hour < 18) ? "day" : "night";
@@ -36,16 +93,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(
-          create: (context) =>
-              di.locator<WeatherNowBloc>()
-                ..add(const WeatherNowEvent.getWeatherNow("Malang")),
-        ),
-        BlocProvider(
-          create: (context) =>
-              di.locator<WeatherForecastBloc>()
-                ..add(const WeatherForecastEvent.getWeatherForecast("Malang")),
-        ),
+        BlocProvider.value(value: _weatherNowBloc),
+        BlocProvider.value(value: _weatherForecastBloc),
       ],
       child: Container(
         decoration: const BoxDecoration(

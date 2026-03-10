@@ -17,18 +17,20 @@ class WeatherForecastBloc
     : super(const WeatherForecastState.initial()) {
     on<WeatherForecastEvent>((event, emit) async {
       await event.map(
-        getWeatherForecast: (e) => _onGetWeatherForecast(e.cityName, emit),
+        getWeatherForecast: (e) => _onGetWeatherForecast(e.cityName, e.lat, e.lon, emit),
       );
     });
   }
 
   Future<void> _onGetWeatherForecast(
     String cityName,
+    double? lat,
+    double? lon,
     Emitter<WeatherForecastState> emit,
   ) async {
     emit(const WeatherForecastState.loading());
 
-    final result = await getForecastUseCase(cityName);
+    final result = await getForecastUseCase(cityName, lat, lon);
 
     result.fold(
       (failure) => emit(WeatherForecastState.error(failure.message)),

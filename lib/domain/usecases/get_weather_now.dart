@@ -9,7 +9,7 @@ class GetWeatherNowUseCase {
 
   GetWeatherNowUseCase(this.repository);
 
-  Future<Either<Failure, WeatherEntity>> call(String cityName){
-    return repository.getWeatherNow(cityName);
+  Future<Either<Failure, WeatherEntity>> call(String cityName, double? lat, double? lon){
+    return repository.getWeatherNow(cityName, lat, lon);
   }
 }

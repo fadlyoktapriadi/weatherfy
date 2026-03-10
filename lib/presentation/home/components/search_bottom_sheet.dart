@@ -45,6 +45,20 @@ class _SearchBottomSheetState extends State<SearchBottomSheet> {
             child: Column(
               children: [
                 _buildHandle(),
+                const SizedBox(height: 8),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                          "Search",
+                          style: AppTextStyles.heading2
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 8),
                 _buildSearchField(),
                 Expanded(
                   child: BlocBuilder<CitySearchBloc, CitySearchState>(
@@ -89,30 +103,28 @@ class _SearchBottomSheetState extends State<SearchBottomSheet> {
 
   Widget _buildSearchField() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       child: TextField(
         controller: _searchController,
         autofocus: true,
         decoration: InputDecoration(
           hintText: 'Search City...',
-          hintStyle: AppTextStyles.bodyMedium.copyWith(
-            // color: AppColors.grey600,
-          ),
-          // suffixIcon: const Icon(Icons.search, color: AppColors.grey600),
+          hintStyle: AppTextStyles.bodyMedium,
           contentPadding: const EdgeInsets.symmetric(horizontal: 16),
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(24),
             borderSide: const BorderSide(color: Colors.black),
           ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(24),
             borderSide: BorderSide(color: Colors.black),
           ),
           suffixIcon: _searchController.text.isNotEmpty
               ? IconButton(
                   icon: const Icon(Icons.clear),
                   onPressed: () {
-                    _searchController.clear();
+                    setState(() {
+                      _searchController.clear();});
                     context.read<CitySearchBloc>().add(
                       const CitySearchEvent.searchChanged(''),
                     );

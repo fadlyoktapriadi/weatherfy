@@ -1,16 +1,23 @@
 # weatherfy
 
 Weather App
+<br>
+<img src="https://github.com/fadlyoktapriadi/weatherfy/blob/main/ss1.png" width="200">
+<img src="https://github.com/fadlyoktapriadi/weatherfy/blob/main/ss2.png" width="200">
+<img src="https://github.com/fadlyoktapriadi/weatherfy/blob/main/ss3.png" width="200">
 
-## Getting Started
+## Detail Project
+Architecture : Clean Architecture (Presentation - Domain - Data) <br>
+Data Source : API OpenWeather <br>
+Plugin:
+* BLoC
+* GoRouter
+* Dio
+* GetIt
+* Dartz
+* RxDart
+* Freezed
+* Geocoding
+* Geolocation
+* Build_runner
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.

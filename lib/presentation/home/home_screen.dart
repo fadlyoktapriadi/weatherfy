@@ -82,13 +82,22 @@ class _HomeScreenState extends State<HomeScreen> {
     _weatherForecastBloc.add(WeatherForecastEvent.getWeatherForecast(cityName, lat: lat, lon: lon));
   }
 
-  String _getWeatherImagePath(String weatherMain) {
+  bool get _isDayTime {
     final hour = DateTime.now().hour;
-    final timePrefix = (hour >= 6 && hour < 18) ? "day" : "night";
+    return hour >= 6 && hour < 18;
+  }
+
+  List<Color> get _backgroundGradient {
+    return _isDayTime
+        ? [AppColors.bgLightGradient1, AppColors.bgLightGradient2, AppColors.bgLightGradient3]
+        : [AppColors.bgDarkGradient1, AppColors.bgDarkGradient2, AppColors.bgDarkGradient3];
+  }
+
+  String _getWeatherImagePath(String weatherMain) {
+    final timePrefix = _isDayTime ? "day" : "night";
     final weatherSuffix = weatherMain.toLowerCase();
     return "assets/images/$timePrefix $weatherSuffix.png";
   }
-
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
@@ -97,13 +106,9 @@ class _HomeScreenState extends State<HomeScreen> {
         BlocProvider.value(value: _weatherForecastBloc),
       ],
       child: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [
-              AppColors.bgLightGradient1,
-              AppColors.bgLightGradient2,
-              AppColors.bgLightGradient3,
-            ],
+            colors: _backgroundGradient,
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -115,9 +120,13 @@ class _HomeScreenState extends State<HomeScreen> {
               builder: (context, state) {
                 return state.when(
                   initial: () =>
-                      const Center(child: CircularProgressIndicator()),
+                      const Center(child: CircularProgressIndicator(
+                        color: Colors.white,
+                      )),
                   loading: () =>
-                      const Center(child: CircularProgressIndicator()),
+                      const Center(child: CircularProgressIndicator(
+                        color: Colors.white,
+                      )),
                   error: (message) => Center(
                     child: Text(
                       message,
@@ -230,7 +239,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             const SizedBox(height: 18),
                             Container(
                               decoration: BoxDecoration(
-                                color: AppColors.navy600,
+                                color:  _isDayTime ? AppColors.bgContainerLight : AppColors.bgContainerDark,
                                 borderRadius: BorderRadius.circular(24),
                               ),
                               child: Padding(
@@ -333,7 +342,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             const SizedBox(height: 18),
                             Container(
                               decoration: BoxDecoration(
-                                color: AppColors.navy600,
+                                  color:  _isDayTime ? AppColors.bgContainerLight : AppColors.bgContainerDark,
                                 borderRadius: BorderRadius.circular(24),
                               ),
                               child: Padding(
@@ -349,10 +358,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                       builder: (context, state) {
                                         return state.when(
                                           initial: () => const Center(
-                                            child: CircularProgressIndicator(),
+                                            child: CircularProgressIndicator(
+                                              color: Colors.white,
+                                            ),
                                           ),
                                           loading: () => const Center(
-                                            child: CircularProgressIndicator(),
+                                            child: CircularProgressIndicator(
+                                              color: Colors.white,
+                                            ),
                                           ),
                                           error: (message) => Center(
                                             child: Text(
@@ -431,7 +444,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             const SizedBox(height: 18),
                             Container(
                               decoration: BoxDecoration(
-                                color: AppColors.navy600,
+                                color:  _isDayTime ? AppColors.bgContainerLight : AppColors.bgContainerDark,
                                 borderRadius: BorderRadius.circular(24),
                               ),
                               child: Padding(
@@ -447,10 +460,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                       builder: (context, state) {
                                         return state.when(
                                           initial: () => const Center(
-                                            child: CircularProgressIndicator(),
+                                            child: CircularProgressIndicator(
+                                              color: Colors.white,
+                                            ),
                                           ),
                                           loading: () => const Center(
-                                            child: CircularProgressIndicator(),
+                                            child: CircularProgressIndicator(
+                                              color: Colors.white,
+                                            ),
                                           ),
                                           error: (message) => Center(
                                             child: Text(

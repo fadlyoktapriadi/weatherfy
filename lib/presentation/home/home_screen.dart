@@ -83,7 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   bool get _isDayTime {
-    final hour = DateTime.now().hour;
+    final hour = DateTime.now().hour * 12;
     return hour >= 6 && hour < 18;
   }
 
